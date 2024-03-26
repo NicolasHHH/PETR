@@ -286,7 +286,7 @@ class PETRHead(AnchorFreeHead):
         coords_h = torch.arange(H, device=img_feats[0].device).float() * pad_h / H
         coords_w = torch.arange(W, device=img_feats[0].device).float() * pad_w / W
 
-        if self.LID:
+        if self.LID: # 线性递增离散化
             index  = torch.arange(start=0, end=self.depth_num, step=1, device=img_feats[0].device).float()
             index_1 = index + 1
             bin_size = (self.position_range[3] - self.depth_start) / (self.depth_num * (1 + self.depth_num))
@@ -388,6 +388,8 @@ class PETRHead(AnchorFreeHead):
 
         if self.with_position:
             coords_position_embeding, _ = self.position_embeding(mlvl_feats, img_metas, masks)
+            # 240327
+            # B, N, self.embed_dims, H, W, mask
             pos_embed = coords_position_embeding
             if self.with_multiview:
                 sin_embed = self.positional_encoding(masks)
